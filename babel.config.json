@@ -16,13 +16,13 @@
     [
       "@babel/preset-react",
       {
-        "pragma": "Didact.createElement"
+        "pragma": "ft_react.createElement"
       }
     ]
   ],
   "plugins": [
     ["@babel/plugin-transform-react-jsx", {
-      "pragma": "Didact.createElement"
+      "pragma": "ft_react.createElement"
     }]
   ]
 }

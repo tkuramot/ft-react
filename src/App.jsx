@@ -3,7 +3,9 @@ function createElement(type, props, ...children) {
     type,
     props: {
       ...props,
-      children,
+      children: children.map((child) =>
+        typeof child === "object" ? child : createTextElement(child)
+      ),
     },
   };
 }
@@ -18,11 +20,18 @@ function createTextElement(text) {
   };
 }
 
-const Didact = {
+function render() {
+  // TODO
+}
+
+ft_react = {
   createElement,
+  render,
 };
 
-/** @jsx Didact.createElement **/
+/** @jsx ft_react.createElement **/
+import ft_react from "./ft_react";
+
 const element = (
   <div id="foo">
     <a>bar</a>
@@ -31,4 +40,4 @@ const element = (
 );
 
 const container = document.getElementById("root");
-ReactDOM.render(element, container);
+ft_react.render(element, container);
