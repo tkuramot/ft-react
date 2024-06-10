@@ -3,6 +3,7 @@
 
 !.gitignore
 !README.md
+!Makefile
 !package.json
 !pnpm-lock.yaml
 !/src/
