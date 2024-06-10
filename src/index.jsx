@@ -20,18 +20,27 @@ function createTextElement(text) {
   };
 }
 
-function render() {
-  // TODO
+function render(element, container) {
+  const dom = element.type === "TEXT_ELEMENT"
+    ? document.createTextNode("")
+    : document.createElement(element.type);
+
+  const isProperty = (key) => key !== "children";
+  Object.keys(element.props).filter(isProperty).forEach((name) => {
+    dom[name] = element.props[name];
+  });
+
+  element.props.children.forEach((child) => render(child, dom));
+
+  container.appendChild(dom);
 }
 
-ft_react = {
+const Didact = {
   createElement,
   render,
 };
 
-/** @jsx ft_react.createElement **/
-import ft_react from "./ft_react";
-
+/** @jsx Didact.createElement **/
 const element = (
   <div id="foo">
     <a>bar</a>
@@ -40,4 +49,4 @@ const element = (
 );
 
 const container = document.getElementById("root");
-ft_react.render(element, container);
+Didact.render(element, container);
