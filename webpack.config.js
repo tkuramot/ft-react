@@ -22,4 +22,15 @@ module.exports = {
       },
     ],
   },
+  devServer: {
+    hot: "only",
+    host: "0.0.0.0",
+    port: 3000,
+    static: {
+      directory: path.resolve(__dirname, "public"),
+      publicPath: "/",
+      watch: true,
+    },
+    watchFiles: ["src/**/*.js"],
+  },
 };
