@@ -36,50 +36,38 @@ const isNew = (prev, next) => (key) => prev[key] !== next[key];
 const isGone = (_, next) => (key) => !(key in next);
 function updateDom(dom, prevProps, nextProps) {
   // remove old or changed event listeners
-  Object.keys(prevProps)
-    .filter(isEvent)
-    .filter(
-      (key) =>
-        !(key in nextProps) ||
-        isNew(prevProps, nextProps)(key),
-    )
-    .forEach((name) => {
-      const eventType = name
-        .toLowerCase()
-        .substring(2);
-      dom.removeEventListener(
-        eventType,
-        prevProps[name],
-      );
-    });
+  const prevEventKeys = Object.keys(prevProps).filter(isEvent);
+  const removedEventKeys = prevEventKeys.filter(
+    (key) => !(key in nextProps) || isNew(prevProps, nextProps)(key),
+  );
+  for (const key of removedEventKeys) {
+    const eventType = key.toLowerCase().substring(2);
+    dom.removeEventListener(eventType, prevProps[key]);
+  }
 
   // add new event listeners
-  Object.keys(nextProps)
-    .filter(isEvent)
-    .filter(isNew(prevProps, nextProps))
-    .forEach((name) => {
-      const eventType = name.toLowerCase().substring(2);
-      dom.addEventListener(
-        eventType,
-        nextProps[name],
-      );
-    });
+  const nextEventKeys = Object.keys(nextProps).filter(isEvent);
+  const addedEventKeys = nextEventKeys.filter(
+    (key) => !(key in prevProps) || isNew(prevProps, nextProps)(key),
+  );
+  for (const key of addedEventKeys) {
+    const eventType = key.toLowerCase().substring(2);
+    dom.addEventListener(eventType, nextProps[key]);
+  }
 
   // remove old properties
-  Object.keys(prevProps)
-    .filter(isProperty)
-    .filter(isGone(prevProps, nextProps))
-    .forEach((name) => {
-      dom[name] = "";
-    });
+  const prevPropKeys = Object.keys(prevProps).filter(isProperty);
+  const removedPropKeys = prevPropKeys.filter(isGone(prevProps, nextProps));
+  for (const key of removedPropKeys) {
+    dom[key] = "";
+  }
 
-  // set new or changed defineProperties
-  Object.keys(nextProps)
-    .filter(isProperty)
-    .filter(isNew(prevProps, nextProps))
-    .forEach((name) => {
-      dom[name] = nextProps[name];
-    });
+  // set new or changed properties
+  const nextPropKeys = Object.keys(nextProps).filter(isProperty);
+  const changedPropKeys = nextPropKeys.filter(isNew(prevProps, nextProps));
+  for (const key of changedPropKeys) {
+    dom[key] = nextProps[key];
+  }
 }
 
 function commitRoot() {
@@ -96,14 +84,9 @@ function commitWork(fiber) {
   const domParent = fiber.parent.dom;
 
   if (fiber.effectTag === "PLACEMENT" && fiber.dom !== null) {
-    console.log("hihi");
     domParent.appendChild(fiber.dom);
   } else if (fiber.effectTag === "UPDATE" && fiber.dom !== null) {
-    updateDom(
-      fiber.dom,
-      fiber.alternate.props,
-      fiber.props,
-    );
+    updateDom(fiber.dom, fiber.alternate.props, fiber.props);
   } else if (fiber.effectTag === "DELETION") {
     dom.parent.removeChild(fiber.dom);
   }
@@ -133,9 +116,7 @@ function workLoop(deadline) {
   let shouldYield = false;
 
   while (nextUnitOfWork && !shouldYield) {
-    nextUnitOfWork = performUnitOfWork(
-      nextUnitOfWork,
-    );
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
 
     shouldYield = deadline.timeRemaining() < 1;
   }
@@ -174,7 +155,7 @@ function performUnitOfWork(fiber) {
 
 function reconcileChildren(wipFiber, elements) {
   let index = 0;
-  let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
+  let oldFiber = wipFiber.alternate?.child;
   let prevSibling = null;
 
   while (index < elements.length || oldFiber != null) {
