@@ -8,6 +8,5 @@
 !pnpm-lock.yaml
 !/src/
 !/src/**
-!/public/
 !/public/index.html
 !babel.config.json
