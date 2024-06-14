@@ -10,3 +10,4 @@
 !/src/**
 !/public/index.html
 !babel.config.json
+!webpack.config.js
