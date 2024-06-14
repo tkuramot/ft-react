@@ -1,6 +1,6 @@
-start:
-	pnpm start
-s: start
+dev:
+	pnpm dev
+d: dev
 
 bundle:
 	pnpm bundle
