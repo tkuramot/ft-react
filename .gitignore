@@ -9,5 +9,7 @@
 !/src/
 !/src/**
 !/public/index.html
+!/example/
+!/example/**
 !babel.config.json
 !webpack.config.js
